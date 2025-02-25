@@ -4,88 +4,807 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Economics Quiz</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --gray-light: #f3f4f6;
+            --gray: #9ca3af;
+            --gray-dark: #4b5563;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --white: #ffffff;
+            --red: #ef4444;
+            --green: #10b981;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--gray-light);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .description {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+        
+        .topic-selector {
+            margin-bottom: 2rem;
+        }
+        
+        .select-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--gray);
+            border-radius: 6px;
+            background-color: var(--white);
+            color: var(--text);
+            font-size: 1rem;
+            cursor: pointer;
+            appearance: none;
+        }
+        
+        .select-wrapper::after {
+            content: "▼";
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-dark);
+            pointer-events: none;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        button:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        button:disabled {
+            background-color: var(--gray);
+            cursor: not-allowed;
+        }
+        
+        .pro-badge {
+            background-color: var(--red);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        
+        .quiz-container {
+            display: none;
+        }
+        
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .quiz-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .quiz-progress {
+            font-size: 1rem;
+            color: var(--text-light);
+        }
+        
+        .question-container {
+            margin-bottom: 2rem;
+        }
+        
+        .question {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .options {
+            display: grid;
+            gap: 0.75rem;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid var(--gray);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .option:hover {
+            background-color: var(--gray-light);
+        }
+        
+        .option.selected {
+            border-color: var(--primary);
+            background-color: rgba(37, 99, 235, 0.1);
+        }
+        
+        .option-prefix {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--gray-light);
+            border-radius: 50%;
+            margin-right: 1rem;
+            font-weight: 600;
+        }
+        
+        .selected .option-prefix {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+        
+        .option-text {
+            flex: 1;
+        }
+        
+        .quiz-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+        
+        .back-btn {
+            background-color: var(--gray-light);
+            color: var(--text);
+        }
+        
+        .back-btn:hover {
+            background-color: var(--gray);
+        }
+        
+        .results-container {
+            display: none;
+            text-align: center;
+        }
+        
+        .results-header {
+            margin-bottom: 2rem;
+        }
+        
+        .results-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .results-subtitle {
+            color: var(--text-light);
+        }
+        
+        .score {
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 1.5rem 0;
+        }
+        
+        .score-text {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .restart-btn {
+            background-color: var(--gray-light);
+            color: var(--text);
+        }
+        
+        .pro-tooltip {
+            position: fixed;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        /* Blurred pro options */
+        .pro-option {
+            filter: blur(1px);
+            opacity: 0.7;
+            position: relative;
+            cursor: not-allowed;
+        }
+    </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav>
-        <a href="https://economicsquiz.github.io/homepage/" class="return-home-btn">Return to Homepage</a>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="container">
-        <h1>Economics Quiz</h1>
+    <div class="container">
+        <header>
+            <h1>Economics Quiz Challenge</h1>
+            <p class="description">Test your knowledge with our practice questions</p>
+        </header>
         
-        <!-- Quiz Controls -->
-        <section class="quiz-controls">
-            <select class="topic-select" id="topicSelect">
-                <option value="">Select a Topic</option>
-                <option value="Microeconomics">Microeconomics</option>
-                <option value="Macroeconomics">Macroeconomics</option>
-                <option value="International Economics">International Economics</option>
-            </select>
-
-            <div class="progress-container" id="progressContainer" style="display: none;">
-                <div class="progress-text" id="progressText">Questions Answered: 0/5</div>
-                <div class="progress-bar" id="progressBar"></div>
-            </div>
-        </section>
-
-        <!-- Quiz Content -->
-        <section id="quizContainer" class="quiz-container" style="display: none;"></section>
-
-        <!-- Donation Section -->
-        <section id="donate" class="donate-section">
-            <h2 class="donation-title">Support economics education and empower future economists!</h2>
+        <div id="topic-selector" class="topic-selector">
+            <h2>Select an Economics Topic</h2>
+            <p class="description">Choose a topic to start your 10-question quiz session</p>
             
-            <div class="donation-image-container">
-                <img src="https://example.com/economics-image.jpg"
-                     alt="Economics education"
-                     class="donation-image"
-                     loading="lazy">
+            <div class="select-wrapper">
+                <select id="topic-dropdown">
+                    <option value="" disabled selected>Select a topic...</option>
+                    <option value="micro">Microeconomics</option>
+                    <option value="macro">Macroeconomics</option>
+                    <option value="international">International Economics</option>
+                    <option value="development" class="pro-option">Development Economics</option>
+                    <option value="behavioral" class="pro-option">Behavioral Economics</option>
+                    <option value="environmental" class="pro-option">Environmental Economics</option>
+                    <option value="financial" class="pro-option">Financial Economics</option>
+                    <option value="labor" class="pro-option">Labor Economics</option>
+                </select>
             </div>
             
-            <p class="donation-description">
-                Help aspiring economists access quality resources. Your donations can provide free tools and education for future leaders in economics.
-            </p>
-        </section>
-    </main>
-
-    <!-- Fixed Elements -->
-    <div class="donate-banner">
-        <a href="https://economicsdonations.github.io/donate/" target="_blank" rel="noopener noreferrer">
-            PLEASE CLICK HERE TO DONATE
-        </a>
-    </div>
-
-    <!-- Telegram Popup -->
-    <div class="telegram-popup" id="telegramPopup" style="display: none;">
-        <div class="popup-content">
-            <span class="close-btn" onclick="closePopup()">&times;</span>
-            
-            <div class="popup-header">
-                <img src="https://logos-world.net/wp-content/uploads/2021/03/Telegram-Symbol.png" 
-                     alt="Telegram Logo" 
-                     class="telegram-logo">
-                <h2>🚨 Limited Time Access! 🚨</h2>
+            <button id="start-quiz" disabled>Start Quiz</button>
+        </div>
+        
+        <div id="quiz-container" class="quiz-container">
+            <div class="quiz-header">
+                <div class="quiz-title" id="quiz-title">Microeconomics Quiz</div>
+                <div class="quiz-progress">Question <span id="current-question">1</span> of <span id="total-questions">10</span></div>
             </div>
-
-            <div class="popup-body">
-                <p class="urgent-msg">⚠️ Our Telegram group is closing in less than 24 hours!</p>
-                <p>Join our exclusive Telegram channel to access:</p>
-                <ul>
-                    <li>📚 Free Video Lectures</li>
-                    <li>📝 Study Materials</li>
-                    <li>👥 Community Support</li>
-                    <li>🎯 Practice Problems</li>
-                </ul>
-                <a href="https://t.me/economics101" class="join-btn" target="_blank">
-                    Join Now Before It's Too Late!
-                </a>
+            
+            <div class="question-container">
+                <div id="question" class="question">Loading question...</div>
+                <div id="options" class="options">
+                    <!-- Options will be inserted here by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="quiz-navigation">
+                <button id="back-btn" class="back-btn">Back to Topics</button>
+                <button id="next-btn">Next Question</button>
+            </div>
+        </div>
+        
+        <div id="results-container" class="results-container">
+            <div class="results-header">
+                <div class="results-title">Quiz Complete!</div>
+                <div class="results-subtitle" id="results-topic">Microeconomics Quiz</div>
+            </div>
+            
+            <div class="score" id="score">7/10</div>
+            <div class="score-text" id="score-text">Great job! You scored 70%</div>
+            
+            <div class="actions">
+                <button id="restart-btn" class="restart-btn">Try Another Topic</button>
+                <button id="retry-btn">Retry This Topic</button>
             </div>
         </div>
     </div>
-
-    <script src="script.js"></script>
+    
+    <div id="pro-tooltip" class="pro-tooltip">UPGRADE TO PRO</div>
+    
+    <script>
+        // DOM Elements
+        const topicSelector = document.getElementById('topic-selector');
+        const quizContainer = document.getElementById('quiz-container');
+        const resultsContainer = document.getElementById('results-container');
+        const topicDropdown = document.getElementById('topic-dropdown');
+        const startQuizBtn = document.getElementById('start-quiz');
+        const backBtn = document.getElementById('back-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const retryBtn = document.getElementById('retry-btn');
+        const quizTitle = document.getElementById('quiz-title');
+        const currentQuestionSpan = document.getElementById('current-question');
+        const totalQuestionsSpan = document.getElementById('total-questions');
+        const questionElement = document.getElementById('question');
+        const optionsElement = document.getElementById('options');
+        const resultsTopic = document.getElementById('results-topic');
+        const scoreElement = document.getElementById('score');
+        const scoreTextElement = document.getElementById('score-text');
+        const proTooltip = document.getElementById('pro-tooltip');
+        
+        // Quiz state
+        let currentTopic = '';
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedAnswers = [];
+        
+        // Question banks for each topic
+        const questionBanks = {
+            micro: [
+                {
+                    question: "What is the law of demand?",
+                    options: ["As price increases, quantity demanded increases", "As price increases, quantity demanded decreases", "As price decreases, quantity demanded decreases", "Price and quantity demanded are unrelated"],
+                    answer: 1
+                },
+                {
+                    question: "What is a normal good?",
+                    options: ["A good for which demand increases when income increases", "A good for which demand decreases when income increases", "A good that is consumed on a regular basis", "A good that is produced using standard methods"],
+                    answer: 0
+                },
+                {
+                    question: "What is price elasticity of demand?",
+                    options: ["How much producers adjust prices based on costs", "How much price changes over time", "How responsive consumers are to price changes", "How much profit is generated at different price points"],
+                    answer: 2
+                },
+                {
+                    question: "In perfect competition, firms are:",
+                    options: ["Price makers", "Price takers", "Monopolists", "Oligopolists"],
+                    answer: 1
+                },
+                {
+                    question: "What is a monopoly?",
+                    options: ["Many sellers of similar products", "Many sellers of different products", "A single seller of a product with no close substitutes", "Two dominant firms in a market"],
+                    answer: 2
+                },
+                {
+                    question: "What is opportunity cost?",
+                    options: ["The explicit monetary cost of a decision", "The value of the next best alternative forgone", "The cost of operating a business", "The cost of raw materials"],
+                    answer: 1
+                },
+                {
+                    question: "What is the marginal utility?",
+                    options: ["The total satisfaction from consuming a good", "The average satisfaction from consuming multiple goods", "The additional satisfaction from consuming one more unit of a good", "The minimum satisfaction required to consume a good"],
+                    answer: 2
+                },
+                {
+                    question: "What happens in a market at equilibrium?",
+                    options: ["Quantity supplied exceeds quantity demanded", "Quantity demanded exceeds quantity supplied", "Quantity supplied equals quantity demanded", "Neither suppliers nor consumers want to trade"],
+                    answer: 2
+                },
+                {
+                    question: "Which of the following is a characteristic of a Giffen good?",
+                    options: ["Its demand curve slopes downward", "Its demand increases as price increases", "It is a luxury good", "It has many close substitutes"],
+                    answer: 1
+                },
+                {
+                    question: "What is consumer surplus?",
+                    options: ["The extra units produced by suppliers", "The difference between what consumers are willing to pay and what they actually pay", "The profit earned by producers", "The total revenue in a market"],
+                    answer: 1
+                },
+                {
+                    question: "What is a production possibility frontier (PPF) used to illustrate?",
+                    options: ["Maximum profit potential", "Resource allocation trade-offs", "Consumer preferences", "Price determination"],
+                    answer: 1
+                },
+                {
+                    question: "What is a market failure?",
+                    options: ["When a business goes bankrupt", "When demand exceeds supply", "When markets don't allocate resources efficiently", "When prices rise too quickly"],
+                    answer: 2
+                },
+                {
+                    question: "In oligopoly markets, firms often engage in:",
+                    options: ["Perfect competition", "Strategic behavior considering rival reactions", "Completely independent decision making", "Price taking"],
+                    answer: 1
+                },
+                {
+                    question: "What does the term 'externality' refer to in economics?",
+                    options: ["Foreign trade", "Government regulation", "Costs or benefits affecting third parties", "External business consultants"],
+                    answer: 2
+                },
+                {
+                    question: "What is 'adverse selection' in markets?",
+                    options: ["When consumers choose inferior products", "When good products drive out bad products", "When information asymmetry leads to market inefficiency", "When suppliers select the wrong production methods"],
+                    answer: 2
+                }
+            ],
+            macro: [
+                {
+                    question: "What does GDP stand for?",
+                    options: ["Global Development Progress", "General Domestic Product", "Gross Domestic Product", "Growth and Development Parameter"],
+                    answer: 2
+                },
+                {
+                    question: "Which of the following is NOT a component of GDP?",
+                    options: ["Consumption", "Government spending", "Stock market transactions", "Investments"],
+                    answer: 2
+                },
+                {
+                    question: "What is inflation?",
+                    options: ["Decrease in the general price level", "Increase in the general price level", "Decrease in unemployment", "Increase in GDP"],
+                    answer: 1
+                },
+                {
+                    question: "What is fiscal policy?",
+                    options: ["Central bank's management of interest rates", "Government's use of taxation and spending", "Management of international trade", "Regulation of financial markets"],
+                    answer: 1
+                },
+                {
+                    question: "What does a recession typically mean?",
+                    options: ["Increasing GDP for two consecutive quarters", "Decreasing GDP for two consecutive quarters", "Increasing unemployment for one year", "Decreasing inflation for six months"],
+                    answer: 1
+                },
+                {
+                    question: "What is monetary policy?",
+                    options: ["Government's tax collection strategy", "Central bank's control of money supply and interest rates", "Foreign currency exchange regulations", "Corporate dividend policies"],
+                    answer: 1
+                },
+                {
+                    question: "What is the Phillips Curve used to show?",
+                    options: ["The relationship between inflation and unemployment", "The relationship between interest rates and investment", "The relationship between taxes and government spending", "The relationship between imports and exports"],
+                    answer: 0
+                },
+                {
+                    question: "What is the aggregate demand curve?",
+                    options: ["The demand for a specific product in all markets", "The total demand for goods and services at various price levels", "The relationship between wages and labor supply", "The government's demand for goods and services"],
+                    answer: 1
+                },
+                {
+                    question: "What happens during stagflation?",
+                    options: ["High growth and low inflation", "Low growth and low inflation", "High growth and high inflation", "Low growth and high inflation"],
+                    answer: 3
+                },
+                {
+                    question: "What does the term 'money supply' refer to?",
+                    options: ["Government budget for public services", "Total amount of money available in an economy", "Annual GDP of a country", "Total personal savings in banks"],
+                    answer: 1
+                },
+                {
+                    question: "What is the multiplier effect?",
+                    options: ["The impact of technological improvement on productivity", "How initial spending leads to increased consumption and economic output", "The effect of compound interest on savings", "How tax increases multiply government revenue"],
+                    answer: 1
+                },
+                {
+                    question: "Which organization is typically responsible for monetary policy in the United States?",
+                    options: ["Department of Treasury", "Internal Revenue Service", "Federal Reserve", "Congress"],
+                    answer: 2
+                },
+                {
+                    question: "What does an expansionary fiscal policy typically involve?",
+                    options: ["Increasing taxes and reducing government spending", "Decreasing taxes and increasing government spending", "Increasing interest rates", "Reducing the money supply"],
+                    answer: 1
+                },
+                {
+                    question: "What is the natural rate of unemployment?",
+                    options: ["Zero unemployment", "The unemployment level when the economy is at full capacity", "The highest level of unemployment historically", "The unemployment rate during a recession"],
+                    answer: 1
+                },
+                {
+                    question: "What is Okun's Law about?",
+                    options: ["The relationship between inflation and interest rates", "The relationship between GDP growth and unemployment changes", "The relationship between government spending and taxation", "The relationship between imports and currency value"],
+                    answer: 1
+                }
+            ],
+            international: [
+                {
+                    question: "What is comparative advantage?",
+                    options: ["The ability to produce goods at a lower absolute cost", "The ability to sell products at higher prices internationally", "The ability to produce goods at a lower opportunity cost", "Having an advantage in all areas of production"],
+                    answer: 2
+                },
+                {
+                    question: "What does a trade deficit indicate?",
+                    options: ["A country's exports exceed its imports", "A country's imports exceed its exports", "A country has no international trade", "A country has equal imports and exports"],
+                    answer: 1
+                },
+                {
+                    question: "What is a tariff?",
+                    options: ["A tax on exports", "A tax on imports", "A subsidy for domestic producers", "A limit on the quantity of imports"],
+                    answer: 1
+                },
+                {
+                    question: "What is the World Trade Organization's primary function?",
+                    options: ["Providing loans to developing countries", "Regulating international currency exchange", "Overseeing international trade rules and settling disputes", "Imposing tariffs on unfair trade practices"],
+                    answer: 2
+                },
+                {
+                    question: "What is a floating exchange rate?",
+                    options: ["An exchange rate fixed by a country's central bank", "An exchange rate determined by supply and demand in the forex market", "An exchange rate tied to the price of gold", "An exchange rate that never changes"],
+                    answer: 1
+                },
+                {
+                    question: "What is capital flight?",
+                    options: ["The rapid movement of capital out of a country", "The investment of domestic capital in foreign markets", "The movement of skilled workers to other countries", "Foreign direct investment into a country"],
+                    answer: 0
+                },
+                {
+                    question: "What is the purpose of the International Monetary Fund (IMF)?",
+                    options: ["To finance infrastructure projects in developing countries", "To promote international monetary cooperation and exchange rate stability", "To regulate international trade", "To provide development aid to poor countries"],
+                    answer: 1
+                },
+                {
+                    question: "What is a common market?",
+                    options: ["A local marketplace where international goods are sold", "A trade agreement eliminating tariffs between countries", "An economic integration with free movement of goods, services, capital, and labor", "A central location for currency exchange"],
+                    answer: 2
+                },
+                {
+                    question: "What is dumping in international trade?",
+                    options: ["Disposing of waste products in other countries", "Selling exports at prices below the cost of production", "Flooding a market with excess inventory", "Transferring outdated technology to developing countries"],
+                    answer: 1
+                },
+                {
+                    question: "What is the Heckscher-Ohlin theory about?",
+                    options: ["How countries should manage their currency reserves", "How political systems affect economic development", "How factor endowments determine trade patterns", "How multinational corporations operate globally"],
+                    answer: 2
+                },
+                {
+                    question: "What is a currency peg?",
+                    options: ["A system where a currency's value floats freely", "A strategy to devalue a currency", "A fixed exchange rate between two currencies", "A tax on currency transactions"],
+                    answer: 2
+                },
+                {
+                    question: "What does FDI stand for in international economics?",
+                    options: ["Financial Development Index", "Foreign Direct Investment", "Fiscal Dependency Indicator", "Free Development Initiative"],
+                    answer: 1
+                },
+                {
+                    question: "What is the balance of payments?",
+                    options: ["The difference between exports and imports", "A record of all transactions between a country and the rest of the world", "The balance in a country's foreign exchange reserves", "The difference between government revenue and expenditure"],
+                    answer: 1
+                },
+                {
+                    question: "What is the J-curve effect in international trade?",
+                    options: ["The initial worsening of a trade deficit after currency depreciation before improvement", "The pattern of economic growth in developing countries", "The relationship between tariff levels and government revenue", "The impact of foreign investment on domestic employment"],
+                    answer: 0
+                },
+                {
+                    question: "What is the Triffin Dilemma?",
+                    options: ["The conflict between domestic and international monetary policy objectives", "The challenge of balancing free trade and protectionism", "The problem of choosing between fixed and floating exchange rates", "The difficulty of achieving both full employment and price stability"],
+                    answer: 0
+                }
+            ]
+        };
+        
+        // Initialize the quiz
+        function init() {
+            // Enable/disable start button based on topic selection
+            topicDropdown.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                currentTopic = this.value;
+                
+                if (currentTopic && !selectedOption.classList.contains('pro-option')) {
+                    startQuizBtn.disabled = false;
+                } else {
+                    startQuizBtn.disabled = true;
+                }
+            });
+            
+            // Handle PRO option selection
+            topicDropdown.addEventListener('mousedown', function(event) {
+                const select = this;
+                setTimeout(function() {
+                    const selectedOption = select.options[select.selectedIndex];
+                    if (selectedOption && selectedOption.classList.contains('pro-option')) {
+                        showProTooltip(event);
+                        // Reset selection to previous or empty
+                        select.value = currentTopic || "";
+                    }
+                }, 100);
+            });
+            
+            // Start quiz button click handler
+            startQuizBtn.addEventListener('click', startQuiz);
+            
+            // Back button click handler
+            backBtn.addEventListener('click', function() {
+                showTopicSelector();
+            });
+            
+            // Next button click handler
+            nextBtn.addEventListener('click', goToNextQuestion);
+            
+            // Restart button click handler
+            restartBtn.addEventListener('click', function() {
+                showTopicSelector();
+            });
+            
+            // Retry button click handler
+            retryBtn.addEventListener('click', function() {
+                startQuiz();
+            });
+        }
+        
+        // Start the quiz with the selected topic
+        function startQuiz() {
+            // Reset quiz state
+            currentQuestionIndex = 0;
+            score = 0;
+            selectedAnswers = Array(10).fill(null);
+            
+            // Get 10 random questions for the selected topic
+            questions = getRandomQuestions(questionBanks[currentTopic], 10);
+            
+            // Update UI
+            quizTitle.textContent = getTopicName(currentTopic) + " Quiz";
+            totalQuestionsSpan.textContent = questions.length;
+            
+            // Show the quiz container
+            topicSelector.style.display = 'none';
+            quizContainer.style.display = 'block';
+            resultsContainer.style.display = 'none';
+            
+            // Load the first question
+            loadQuestion();
+        }
+        
+        // Load the current question
+        function loadQuestion() {
+            const question = questions[currentQuestionIndex];
+            currentQuestionSpan.textContent = currentQuestionIndex + 1;
+            
+            // Update question text
+            questionElement.textContent = question.question;
+            
+            // Clear previous options
+            optionsElement.innerHTML = '';
+            
+            // Add new options
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                if (selectedAnswers[currentQuestionIndex] === index) {
+                    optionElement.classList.add('selected');
+                }
+                
+                optionElement.innerHTML = `
+                    <div class="option-prefix">${String.fromCharCode(65 + index)}</div>
+                    <div class="option-text">${option}</div>
+                `;
+                
+                optionElement.addEventListener('click', () => selectOption(index));
+                optionsElement.appendChild(optionElement);
+            });
+            
+            // Update button text based on question
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.textContent = 'Finish Quiz';
+            } else {
+                nextBtn.textContent = 'Next Question';
+            }
+        }
+        
+        // Select an option
+        function selectOption(optionIndex) {
+            selectedAnswers[currentQuestionIndex] = optionIndex;
+            
+            // Update UI to show selected option
+            const options = optionsElement.querySelectorAll('.option');
+            options.forEach((option, index) => {
+                if (index === optionIndex) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+        }
+        
+        // Go to next question or finish quiz
+        function goToNextQuestion() {
+            // Check if an option is selected
+            if (selectedAnswers[currentQuestionIndex] === null) {
+                alert('Please select an answer before proceeding.');
+                return;
+            }
+            
+            // Check if current answer is correct
+            if (selectedAnswers[currentQuestionIndex] === questions[currentQuestionIndex].answer) {
+                score++;
+            }
+            
+            // Go to next question or finish
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+        
+        // Finish quiz and show results
+        function finishQuiz() {
+            // Calculate score
+            const percentage = (score / questions.length) * 100;
+            
+            // Update results UI
+            resultsTopic.textContent = getTopicName(currentTopic) + " Quiz";
+            scoreElement.textContent = `${score}/${questions.length}`;
+            scoreTextElement.textContent = `You scored ${percentage}%`;
+            
+            // Show results
+            quizContainer.style.display = 'none';
+            resultsContainer.style.display = 'block';
+        }
+        
+        // Show topic selector
+        function showTopicSelector() {
+            topicSelector.style.display = 'block';
+            quizContainer.style.display = 'none';
+            resultsContainer.style.display = 'none';
+        }
+        
+        // Get random questions from a question bank
+        function getRandomQuestions(bank, count) {
+            const shuffled = [...bank].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+        
+        // Get topic name from topic code
+        function getTopicName(topic) {
+            switch(topic) {
+                case 'micro': return 'Microeconomics';
+                case 'macro': return 'Macroeconomics';
+                case 'international': return 'International Economics';
+                default: return '';
+            }
+        }
+        
+        // Show PRO tooltip
+        function showProTooltip(event) {
+            proTooltip.style.left = `${event.pageX}px`;
+            proTooltip.style.top = `${event.pageY - 40}px`;
+            proTooltip.style.opacity = '1';
+            
+            setTimeout(() => {
+                proTooltip.style.opacity = '0';
+            }, 2000);
+        }
+        
+        // Initialize on load
+        window.addEventListener('load', init);
+    </script>
 </body>
 </html>
